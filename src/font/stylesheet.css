@@ -31,20 +31,20 @@
 }
 
 .Fira-Code{
-    font-family:'Fira-Code', Courier, monospace;
+    font-family:'Fira-Code';
 }
 
 .Geist-Bold{
-    font-family:'Geist', Courier, monospace;
+    font-family:'Geist';
     font-weight: 800;
 }
 
 .Geist-Semibold{
-    font-family:'Geist', Courier, monospace;
+    font-family:'Geist';
     font-weight: 600;
 }
 
 .Geist{
-    font-family:'Geist', Courier, monospace;
+    font-family:'Geist';
     font-weight: 300;
 }
