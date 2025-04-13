@@ -1,5 +1,5 @@
 # GitHub Repository Scout
-This application allows you to explore and retrieve file structure of public repositories from GitHub. It lets you easily fetch repository structure by providing a GitHub repository link and copy it to your clipboard.
+Easily explore the contents of any public GitHub repository. Paste a link, instantly view the file structure, and copy it to your clipboard—quick and simple.
 
 ### Features
 
