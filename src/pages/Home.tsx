@@ -54,6 +54,7 @@ const Home = () => {
             setFileStructure([repoName, ...data.structure]);
         } catch (error: any) {
             if (error.response?.status === 404) {
+                setFileStructure(dummyStructure)
                 toast.error("Repository not found. Please check the link.");
             } else {
                 toast.error("Something went wrong while fetching repo structure.");
