@@ -1,27 +1,29 @@
 import os
+import time
+import requests
 from fastapi import FastAPI, HTTPException
 from github import Github
 from typing import List
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
+from threading import Thread
+from contextlib import asynccontextmanager
 
 load_dotenv();
-
-app = FastAPI()
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"], 
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
 
 github_token = os.getenv("GITHUB_TOKEN") 
 github_instance = Github(github_token)
 
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    Thread(target=keep_alive, daemon=True).start()
+    yield 
+
+app = FastAPI(lifespan=lifespan)   
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["*"], 
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -66,3 +68,13 @@ def get_file_structure(repo, path="", prefix=""):
     except Exception as e:
         tree.append(f"{prefix}❌ Failed to fetch {path}: {e}")
     return tree
+
+def keep_alive():
+    url = os.getenv("PING_URL")
+    while True:
+        try:
+            response = requests.get(url)
+            print(f"[PING] {url} -> {response.status_code}")
+        except Exception as e:
+            print(f"[PING] Failed to reach {url}: {e}")
+        time.sleep(600) 
