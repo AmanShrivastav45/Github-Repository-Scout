@@ -34,7 +34,7 @@ const TextArea: React.FC<Props> = ({ fileStructure, dummyStructure }) => {
   }, [displayedText]);
 
   return (
-    <textarea style={{ zIndex: 20000 }} ref={textAreaRef} readOnly rows={20} value={displayedText} className="bg-[#1e1e1e] text-green-400 Fira-Code text-sm sm:text-base resize-none h-full w-full outline-none p-4 sm:p-6 hide-scrollbar border border-[#3a3a3a] mr-4 overflow-x-auto" />
+    <textarea wrap="off" style={{ zIndex: 20000 }} ref={textAreaRef} readOnly rows={20} value={displayedText} className="bg-[#1e1e1e] text-green-400 Fira-Code text-sm sm:text-base resize-none h-full w-full outline-none p-4 sm:p-6 hide-scrollbar border border-[#3a3a3a] mr-4" />
   );
 };
 
