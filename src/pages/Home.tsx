@@ -47,18 +47,20 @@ const Home = () => {
             const username = match[1];
             const repoName = match[2];
 
-            const response = await axios.get(`${import.meta.env.VITE_SERVER_URL}/${username}/${repoName}/structure`);
+            const { data } = await axios.get(
+                `${import.meta.env.VITE_SERVER_URL}/repos/${username}/${repoName}/structure`
+            );
     
-            if (response.status === 200) {
-                setFileStructure([repoName, ...response.data.structure]);
+            setFileStructure([repoName, ...data.structure]);
+        } catch (error: any) {
+            if (error.response?.status === 404) {
+                toast.error("Repository not found. Please check the link.");
             } else {
-                toast.error("Repository not found or is invalid.");
+                toast.error("Something went wrong while fetching repo structure.");
             }
-            setFileStructure([repoName, ...response.data.structure]);
-        } catch (error) {
             console.error("Error fetching repo structure:", error);
         } finally {
-            setLoading(false)
+            setLoading(false);
         }
     };
 
