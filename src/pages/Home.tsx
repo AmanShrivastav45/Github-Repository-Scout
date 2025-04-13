@@ -59,7 +59,6 @@ const Home = () => {
             } else {
                 toast.error("Something went wrong while fetching repo structure.");
             }
-            console.error("Error fetching repo structure:", error);
         } finally {
             setLoading(false);
         }
