@@ -3,14 +3,16 @@ import axios from "axios";
 import Loader from "../components/Loader";
 import "../font/stylesheet.css";
 import { HiOutlineClipboard } from "react-icons/hi2";
-import { BsGithub } from "react-icons/bs";
 import toast from "react-hot-toast";
+import TextArea from "../components/Textarea";
+import { FaLinkedinIn } from "react-icons/fa";
+import { Background } from "../components/Background";
+import { BsStars } from "react-icons/bs";
+import { PiTreeViewFill } from "react-icons/pi";
+import { Link } from "react-router-dom";
 
 const Home = () => {
-    const [userName, setUserName] = useState<string>("");
-    const [repos, setRepos] = useState<string[]>([]);
     const [repoLink, setRepoLink] = useState<string>("");
-    const [selectedRepo, setSelectedRepo] = useState<string>("");
     const [fileStructure, setFileStructure] = useState<string[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
 
@@ -28,25 +30,6 @@ const Home = () => {
         "└── README.md",
     ];
 
-    const handleUserSubmit = async () => {
-        if (!userName) {
-            toast.error("Enter your Username first");
-            return;
-        }
-
-        try {
-            setLoading(true);
-            const { data } = await axios.get(`${import.meta.env.VITE_SERVER_URL}/${userName}`);
-            setRepos(data);
-            setSelectedRepo("");
-            setFileStructure([]);
-        } catch (error) {
-            console.error("Error fetching repositories:", error);
-        } finally {
-            setLoading(false);
-        }
-    };
-
     const handleLinkSubmit = async () => {
         if (!repoLink) {
             toast.error("Please enter a GitHub repository link.");
@@ -54,24 +37,24 @@ const Home = () => {
         }
 
         try {
+            setLoading(true)
             const match = repoLink.match(/github\.com\/([^\/]+)\/([^\/]+)/);
             if (!match || match.length < 3) {
-                console.error("Invalid GitHub repo link.");
+                toast.error("Please enter a valid GitHub Repository.");
                 return;
             }
 
             const username = match[1];
             const repoName = match[2];
 
-            setUserName(username);
-            setSelectedRepo(repoName);
-
             const { data } = await axios.get(
                 `${import.meta.env.VITE_SERVER_URL}/${username}/${repoName}/structure`
             );
-            setFileStructure(data.structure);
+            setFileStructure([repoName, ...data.structure]);
         } catch (error) {
             console.error("Error fetching repo structure:", error);
+        } finally {
+            setLoading(false)
         }
     };
 
@@ -88,100 +71,54 @@ const Home = () => {
         });
     };
 
-    const handleRepoSubmit = async () => {
-        if (!selectedRepo) {
-            toast.error("Select a repository first");
-            return;
-        }
-
-        try {
-            setLoading(true);
-            const { data } = await axios.get(
-                `${import.meta.env.VITE_SERVER_URL}/${userName}/${selectedRepo}/structure`
-            );
-            setFileStructure(data.structure);
-        } catch (error) {
-            console.error("Error fetching file structure:", error);
-        } finally {
-            setLoading(false);
-        }
-    };
     return (
-        <div className="h-screen w-full bg-black flex flex-col items-center justify-center">
-            <div className="h-32 lg:h-40 w-full border-b border-[#2e2e2e] text-gray-100 flex items-center justify-center">
-                <div className="xl:w-[1240px] w-full flex items-center justify-between">
-                    <div className="px-5">
-                        <h1 className="text-2xl lg:text-3xl Geist-Semibold mb-1 flex gap-2 items-center"><BsGithub size={24} />Explore GitHub Repositories.</h1>
-                        <p className="Geist text-xs sm:text-sm lg:text-base text-gray-400">Discover and inspect the file structures of any GitHub repository with ease. Just search your profile and select a repository.</p>
-                    </div>
-                    <div className="hidden lg:block">
-                        <button className="bg-green-300">Reach out</button>
+        <Background>
+            <div style={{ zIndex: 20000 }} className="absolute z-50 inset-0  h-screen w-full moving-gradient-bg flex flex-col items-center justify-center hide-scrollbar">
+                <div className="fixed top-0 h-16 w-full border-b border-[#2e2e2e] text-gray-100 flex justify-center">
+                    <div className="xl:w-[1280px] px-4 w-full h-full flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                            <PiTreeViewFill size={24} />
+                            <h1 className="text-xl">Repository Scout</h1>
+                        </div>
+                        <div className="flex items-center gap-4">
+                            <Link target="_blank" to={"https://www.linkedin.com/in/aman-shrivastav-592110253/"} className="bg-[#5e35b1] flex items-center justify-center rounded-[5px] h-8 w-8">
+                                <FaLinkedinIn size={20} className="text-white" />
+                            </Link>
+                            <Link target="_blank" to={"https://github.com/AmanShrivastav45/Github-Repository-Scout"} className="cursor-pointer bg-[#5e35b1] h-8 flex items-center justify-center rounded-[5px] px-3 text-sm ">Readme.md</Link>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div className="h-[calc(100%-8rem)] w-full flex flex-col items-center justify-start xl:w-[1240px] py-2 Geist">
-                <div className="h-12 w-full flex items-center justify-between text-white mt-2 sm:mt-4 px-4">
-                    <input value={repoLink}
-                        onChange={(e) => setRepoLink(e.target.value.toLowerCase())} className="w-[90%] lowercase h-full px-3 sm:px-4 bg-[#1a1a1a] rounded-[5px] outline-none focus:ring-1 focus:ring-[#3a3a3a] text-sm" placeholder="Paste your repository link here" />
-                    <button onClick={handleLinkSubmit} className="bg-purple-500 h-full px-3 cursor-pointer rounded-[5px] text-sm ml-2">Generate</button>
-                </div>
-                <div className="h-full w-full mt-1 flex items-center justify-center gap-4 px-4">
+                <div className="h-[720px] w-full flex items-center justify-between xl:w-[1280px] py-2 Geist">
                     <div className="h-full hidden sm:block sm:w-[50%] py-3">
-                        <div className="bg-[#09090b] p-4 h-full w-full rounded-[5px]">
-                            <div className="h-10 w-full flex items-center justify-between text-white mt-4">
-                                <input
-                                    value={userName}
-                                    className="w-[90%] h-full px-4 bg-[#1a1a1a] rounded-[5px] outline-none focus:ring-1 focus:ring-[#3a3a3a] lowercase"
-                                    onChange={(e) => setUserName(e.target.value.toLowerCase())}
-                                    placeholder="Enter your username"
-                                />
-                                <button onClick={handleUserSubmit} className="bg-purple-500 h-full px-3 cursor-pointer rounded-[5px]">Search</button>
+                        <div className="p-4 h-full w-full rounded-[5px] ">
+                            <div className="w-full h-full flex flex-col items-center justify-center text-white ">
+                                <div className="flex flex-col items-center w-full mb-24">
+                                    <div className="flex flex-col">
+                                        <h1 className="text-2xl lg:text-4xl Geist-Semibold mb-2 flex gap-2 items-center">Explore GitHub Repositories, Effortlessly.</h1>
+                                        <p className="Geist text-xs sm:text-sm lg:text-base text-gray-400">Discover and inspect the file structures of any GitHub repository with ease.<br /> Just paste your repository link below and click on generate.</p>
+                                    </div>
+                                    <div className="mt-6 w-full flex">
+                                        <input value={repoLink} onChange={(e) => setRepoLink(e.target.value.toLowerCase())}
+                                            className="w-[90%] lowercase h-12 px-3 sm:px-4 bg-[#1e1e1e] rounded-[5px] outline-none border border-[#3e3e33] focus:ring-1 focus:ring-gray-700 text-sm md:text-base" placeholder="Paste your repository link here" />
+                                        <button onClick={handleLinkSubmit} className="bg-purple-500 h-full px-4 cursor-pointer rounded-[5px] text-sm md:text-base ml-2">Generate</button>
+                                    </div>
+                                    <p className="text-gray-400 mt-5 w-full flex gap-2">
+                                        <BsStars size={20} className="text-amber-400 "/>Created by Aman Shrivastav</p>
+                                </div>
                             </div>
-                            {repos.length > 0 && (
-                                <>
-                                    <select
-                                        value={selectedRepo}
-                                        onChange={(e) => setSelectedRepo(e.target.value)}
-                                        className="bg-gray-700 text-white p-2 rounded w-fit"
-                                    >
-                                        <option value="">-- Select a repository --</option>
-                                        {repos.map((repo, i) => (
-                                            <option key={i} value={repo}>
-                                                {repo}
-                                            </option>
-                                        ))}
-                                    </select>
-
-                                    <button
-                                        className="bg-blue-500 px-4 py-1 rounded hover:bg-blue-600 w-fit cursor-pointer"
-                                        onClick={handleRepoSubmit}
-                                    >
-                                        Get File Structure
-                                    </button>
-                                </>
-                            )}
                         </div>
                     </div>
-                    <div className="h-full w-full xl:w-[50%] py-3">
-                        <div className="h-10 w-full bg-[#2a2a2a] text-white rounded-t-[5px] flex items-center justify-end px-2">
-                            <button
-                                onClick={handleCopy}
-                                className=" p-2 rounded-full hover:bg-[#09090b] text-white ml-2"
-                                title="Copy to clipboard"
-                            >
-                                <HiOutlineClipboard size={16} />
-                            </button>
+                    <div className="h-full w-full xl:w-[40%] py-3 relative">
+                        <button onClick={handleCopy} title="Copy to clipboard" className=" p-2 rounded-full hover:bg-[#3a3a3a] absolute right-3 top-6 text-white ml-2">
+                            <HiOutlineClipboard size={16} />
+                        </button>
+                        <div style={{ zIndex: 20000 }} className="h-full z-10">
+                            {loading ? (<Loader />) : (<TextArea fileStructure={fileStructure} dummyStructure={dummyStructure} />)}
                         </div>
-                        {loading ? (
-                            <Loader />
-                        ) : (
-                            <textarea readOnly rows={20} value={fileStructure.length ? fileStructure.join("\n") : dummyStructure.join("\n")}
-                                className="bg-[#1a1a1a] text-green-400 Fira-Code text-sm sm:text-base rounded-b-[5px] resize-none h-full w-full outline-none p-4">
-                            </textarea>)}
                     </div>
                 </div>
             </div>
-        </div>
+        </Background>
     )
 }
 
