@@ -48,7 +48,7 @@ const Home = () => {
             const repoName = match[2];
 
             const { data } = await axios.get(
-                `${import.meta.env.VITE_SERVER_URL}/${username}/${repoName}/structure`
+                `${import.meta.env.VITE_API_URL}/${username}/${repoName}`
             );
     
             setFileStructure([repoName, ...data.structure]);
