@@ -31,7 +31,7 @@ app.add_middleware(
 def root():
     return {"message": "🚀 GitHub Repo Explorer API is running!"}
 
-@app.get("api/{username}/{repository}")
+@app.get("/api/{username}/{repository}")
 async def get_repo_file_structure(username: str, repository: str):
     try:
         backend_url = os.getenv("BACKEND_URL")
