@@ -34,8 +34,8 @@ def root():
 @app.get("api/{username}/{repository}")
 async def get_repo_file_structure(username: str, repository: str):
     try:
-        url = os.getenv("BACKEND_URL")
-        url = f"{url}/{username}/{repository}/structure"
+        backend_url = os.getenv("BACKEND_URL")
+        url = f"{backend_url}/{username}/{repository}"
         response = requests.get(url)
 
         if response.status_code != 200:
